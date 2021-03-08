@@ -391,8 +391,8 @@ struct BSymmetric
     {                                                                                   \
         return BSymmetric<T>(data, size, stride, Major::major, Triangular::tri, super); \
     }
-BSYMMETRIC(rubsym, Row, Upper) BSYMMETRIC(cubsym, Col, Upper);
-BSYMMETRIC(rlbsym, Row, Lower) BSYMMETRIC(clbsym, Col, Lower);
+BSYMMETRIC(rbusym, Row, Upper) BSYMMETRIC(cbusym, Col, Upper);
+BSYMMETRIC(rblsym, Row, Lower) BSYMMETRIC(cblsym, Col, Lower);
 
 template <typename T>
 struct PSymmetric
@@ -414,8 +414,8 @@ struct PSymmetric
     {                                                                    \
         return PSymmetric<T>(data, size, Major::major, Triangular::tri); \
     }
-PSYMMETRIC(rupsym, Row, Upper) PSYMMETRIC(cupsym, Col, Upper);
-PSYMMETRIC(rlpsym, Row, Lower) PSYMMETRIC(clpsym, Col, Lower);
+PSYMMETRIC(rpusym, Row, Upper) PSYMMETRIC(cpusym, Col, Upper);
+PSYMMETRIC(rplsym, Row, Lower) PSYMMETRIC(cplsym, Col, Lower);
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -473,8 +473,8 @@ struct BHermitian
     {                                                                                   \
         return BHermitian<T>(data, size, stride, Major::major, Triangular::tri, super); \
     }
-BHERMITIAN(rubherm, Row, Upper) BHERMITIAN(cubherm, Col, Upper);
-BHERMITIAN(rlbherm, Row, Lower) BHERMITIAN(clbherm, Col, Lower);
+BHERMITIAN(rbuherm, Row, Upper) BHERMITIAN(cbuherm, Col, Upper);
+BHERMITIAN(rblherm, Row, Lower) BHERMITIAN(cblherm, Col, Lower);
 
 template <typename T>
 struct PHermitian
@@ -496,8 +496,8 @@ struct PHermitian
     {                                                                    \
         return PHermitian<T>(data, size, Major::major, Triangular::tri); \
     }
-PHERMITIAN(rupsym, Row, Upper) PHERMITIAN(cupsym, Col, Upper);
-PHERMITIAN(rlpsym, Row, Lower) PHERMITIAN(clpsym, Col, Lower);
+PHERMITIAN(rpusym, Row, Upper) PHERMITIAN(cpusym, Col, Upper);
+PHERMITIAN(rplsym, Row, Lower) PHERMITIAN(cplsym, Col, Lower);
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -633,12 +633,12 @@ REPEAT0(DOT, sdot, ddot)
 
 REPEAT1(DOTU, cdot, zdot)
 
-inline float sdot(Vector<float> X, Vector<float> Y, float alpha)
+inline float exdot(Vector<float> X, Vector<float> Y, float alpha)
 {
     CHECK(X.size == Y.size);
     return cblas_sdsdot(X.size, alpha, X.data, X.stride, Y.data, Y.stride);
 }
-inline float sdot(Vector<float> X, Vector<float> Y)
+inline float exdot(Vector<float> X, Vector<float> Y)
 {
     CHECK(X.size == Y.size);
     return cblas_dsdot(X.size, X.data, X.stride, Y.data, Y.stride);
@@ -1326,7 +1326,7 @@ REPEAT(GELS, sgels, dgels, cgels, zgels)
 REPEAT(GESVD, sgesvd, dgesvd, cgesvd, zgesvd)
 
 #define GERK(F, T, R)                                                                              \
-    inline Size rank(General<T> A, T epsilon)                                                      \
+    inline Size rank(General<T> A, From<T>::Type epsilon)                                          \
     {                                                                                              \
         CHECK(A.state == State::None);                                                             \
         auto SB = Impl::alloc<From<T>::Type>(std::min(A.rows, A.cols));                            \
