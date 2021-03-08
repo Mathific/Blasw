@@ -10,7 +10,7 @@
 ```BLASW``` is a header-only wrapper for ```BLAS``` and parts of the ```LAPACK``` library. It actually uses ```CBLAS``` and ```LAPACKE``` as backends. This library makes things easier by replacing the weird naming scheme of ```BLAS``` with meaningful ones and reducing the number of needed arguments for functions from 10-11 to 2-3. It also removes the need to manually find ```CBLAS``` and ```LAPACKE``` in ```CMake```.
 
 # Installation
-You can install ```BLASW``` system-wide by downloading the [latest release](). Make sure you have ```CMake```, a ```C++``` compiler, ```CBLAS``` and ```LAPACKE``` available on your system. Then run these in repository directory:
+You can install ```BLASW``` system-wide by downloading the [latest release](https://github.com/Mathific/Blasw/releases/latest). Make sure you have ```CMake```, a ```C++``` compiler, ```CBLAS``` and ```LAPACKE``` available on your system. Then run these in repository directory:
 
 ``` shell
 mkdir build
