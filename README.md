@@ -19,6 +19,10 @@ cmake -DCMAKE_BUILD_TYPE=Release -DBLASW_INSTALL=ON -DBLASW_TESTS=OFF -DCMAKE_IN
 sudo cmake --install .
 ```
 
+The ```CMake``` options are:
++ ```BLASW_INSTALL```: Create install target for ```BLASW```.
++ ```BLASW_TESTS```: Build the tests for ```BLASW```.
+
 Then you can use it in ```CMake```:
 
 ``` shell
