@@ -1212,19 +1212,19 @@ REPEAT0(GEEV, sgeev, dgeev)
 REPEAT1(GEEVC, cgeev, zgeev)
 
 #define SYEV(F, T, R)                                                                                 \
-    inline bool eigen(Symmetric<T> A, Vector<T> W, bool vectors)                                      \
+    inline bool eigen(Symmetric<T> A, Vector<T> E, bool vectors)                                      \
     {                                                                                                 \
-        CHECK(A.size == W.size) CHECK(W.stride == 1);                                                 \
+        CHECK(A.size == E.size) CHECK(E.stride == 1);                                                 \
         auto V = vectors ? 'V' : 'N';                                                                 \
-        return F(Impl::lpcvt(A.major), V, Impl::lpcvt(A.tri), A.size, A.data, A.stride, W.data) == 0; \
+        return F(Impl::lpcvt(A.major), V, Impl::lpcvt(A.tri), A.size, A.data, A.stride, E.data) == 0; \
     }
 
 #define HEEV(F, T, R)                                                                                 \
-    inline bool eigen(Hermitian<T> A, Vector<From<T>::Type> W, bool vectors)                          \
+    inline bool eigen(Hermitian<T> A, Vector<From<T>::Type> E, bool vectors)                          \
     {                                                                                                 \
-        CHECK(A.size == W.size) CHECK(W.stride == 1);                                                 \
+        CHECK(A.size == E.size) CHECK(E.stride == 1);                                                 \
         auto V = vectors ? 'V' : 'N';                                                                 \
-        return F(Impl::lpcvt(A.major), V, Impl::lpcvt(A.tri), A.size, A.data, A.stride, W.data) == 0; \
+        return F(Impl::lpcvt(A.major), V, Impl::lpcvt(A.tri), A.size, A.data, A.stride, E.data) == 0; \
     }
 
 REPEAT0(SYEV, ssyev, dsyev)
