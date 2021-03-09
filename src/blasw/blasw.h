@@ -633,10 +633,10 @@ REPEAT0(DOT, sdot, ddot)
 
 REPEAT1(DOTU, cdot, zdot)
 
-inline float exdot(Vector<float> X, Vector<float> Y, float alpha)
+inline float exdot(Vector<float> X, Vector<float> Y, float beta)
 {
     CHECK(X.size == Y.size);
-    return cblas_sdsdot(X.size, alpha, X.data, X.stride, Y.data, Y.stride);
+    return cblas_sdsdot(X.size, beta, X.data, X.stride, Y.data, Y.stride);
 }
 inline float exdot(Vector<float> X, Vector<float> Y)
 {
