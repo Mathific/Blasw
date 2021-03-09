@@ -15,6 +15,7 @@
   - [BHermitian](#bhermitian)
   - [PHermitian](#phermitian)
   - [Posdef](#posdef)
+  - [Important Note](#important-note)
 - [Operations](#operations)
   - [Givens](#givens)
   - [Rotate](#rotate)
@@ -143,12 +144,27 @@ Upper or lower triangular banded row or column major hermitian matrix.
 + ```Blasw::cplherm(Type *data, Size size, Size stride=0)```: wraps lower packed column major hermitian matrix.
 
 ## Posdef
-Row or major positive definite matrix.
+Row or column major positive definite matrix.
 
 + ```Blasw::rupod(Type *data, Size size, Size stride=0)```: wraps upper row major positive definite matrix.
 + ```Blasw::rlpod(Type *data, Size size, Size stride=0)```: wraps lower row major positive definite matrix.
 + ```Blasw::cupod(Type *data, Size size, Size stride=0)```: wraps upper column major positive definite matrix.
 + ```Blasw::clpod(Type *data, Size size, Size stride=0)```: wraps lower column major positive definite matrix.
+
+## Important Note
+Some of the operations can optionally process transposed matrices. You can use ```.trans()``` or ```.adjoint()``` functions to do so. You can see it in this example:
+
+``` c++
+// C = A * B.T
+Blasw::Size X = 10, Y = 30, Z = 20;
+auto A = new float[X * Y];
+auto B = new float[Z * Y];
+auto C = new float[X * Z];
+
+for (Blasw::Size i = 0; i < X * Y; ++i) A[i] = 1;
+for (Blasw::Size i = 0; i < Z * Y; ++i) B[i] = 2;
+Blasw::dot(Blasw::rmat(A, X, Y), Blasw::rmat(B, Z, Y).trans(), Blasw::rmat(C, X, Z), 1, 0);
+```
 
 # Operations
 The above classes are template classes so they accept any data type but the actual operations in ```BLAS``` and ```LAPACK``` support single precision, double precision and complex single precision and complex double precision data types. Type names used in the operations:
@@ -167,54 +183,54 @@ Setup givens or modified givens rotation, uses ```rotg, rotmg```.
 + ```Blasw::givens(<F, D> &D1, <F, D> &D2, <F, D> &B1, <F, D> &B2, <F, D> P[5])```
 
 ## Rotate
-Apply givens or modified givens rotation, uses ```rotm```.
+Apply givens or modified givens rotation, uses ```rot, rotm```.
 
 + ```Blasw::rotate(Vector<F, D> X, Vector<F, D> Y, <F, D> C, <F, D> S)```
 + ```Blasw::rotate(Vector<F, D> X, Vector<F, D> Y, <F, D> P[5])```
 
 ## Swap
-Swap two vectors, uses ```swap```.
+Swap elements of X and Y, uses ```swap```.
 
 + ```Blasw::swap(Vector<F, D, CF, DF> X, Vector<F, D, CF, DF> Y)```
 
 ## Scale
-X = A * X, uses ```scal```.
+X = alpha * X, uses ```scal```.
 
 + ```Blasw::scale(Vector<F, D, CF, DF> X, <F, D> alpha)```
 
 ## Copy
-Copies one vector into another, uses ```copy```.
+Copies element of X into Y, uses ```copy```.
 
 + ```Blasw::copy(Vector<F, D, CF, DF> X, Vector<F, D, CF, DF> Y)```
 
 ## Axpy
-Y = A * X + Y, uses```axpy```.
+Y = alpha * X + Y, uses```axpy```.
 
-+ ```Blasw::axpy(Vector<F, D, CF, DF> X, Vector<F, D, CF, DF> Y, <F, D, CF, DF> A)```
++ ```Blasw::axpy(Vector<F, D, CF, DF> X, Vector<F, D, CF, DF> Y, <F, D, CF, DF> alpha)```
 
 ## Norm2
-Euclidean norm, uses ```nrm2```.
+Euclidean norm of X, uses ```nrm2```.
 
 + ```Blasw::norm2(Vector<F, D, CF, CD> X)```
 
 ## ASum
-Sum of absolute values of vector, uses ```asum```.
+Sum of absolute values of X, uses ```asum```.
 
 + ```Blasw::asum(Vector<F, D, CF, CD> X)```
 
 ## IAMax
- index of max abs values of vector, uses ```iamax```.
+Index of max absolute value of X, uses ```iamax```.
 
 + ```Blasw::iamax(Vector<F, D, CF, CD> X)```
 
 ## ExDot
-Vector dot product with extended precision accumulation, uses ```dsdot```.
+Returns the dot product of X and Y (beta will be added to the output) with extended precision accumulation, uses ```dsdot```.
 
-+ ```Blasw::dot(Vector<F> X, Vector<F> Y)```
-+ ```Blasw::dot(Vector<F> X, Vector<F> Y, F alpha)```
++ ```Blasw::exdot(Vector<F> X, Vector<F> Y)```
++ ```Blasw::exdot(Vector<F> X, Vector<F> Y, F beta)```
 
 ## Dot
-Matrices and vectors multiplication.
+Vector-vector, matrix-vector and matrix-matrix dot product.
 
 + ```Blasw::dot(Vector<F, D> X, Vector<F, D> Y)```
 + ```Blasw::dot(Vector<CF, CD> X, Vector<CF, CD> Y, bool conjugate=true)```
@@ -237,19 +253,19 @@ Matrices and vectors multiplication.
 + ```Blasw::dot(Triangle<F, D, CF, CD> A, General<F, D, CF, CD> B, <F, D, CF, CD> alpha)```
 
 ## Solve
-Solve triangular matrix problems.
+Solve A * X = B or A.T * X = B.
 
-+ ```Blasw::solve(Triangle<F, D, CF, CD> X, Vector<F, D, CF, CD> Y)```
-+ ```Blasw::solve(BTriangle<F, D, CF, CD> X, Vector<F, D, CF, CD> Y)```
-+ ```Blasw::solve(PTriangle<F, D, CF, CD> X, Vector<F, D, CF, CD> Y)```
-+ ```Blasw::solve(Triangle<F, D, CF, CD> X, General<F, D, CF, CD> B, <F, D, CF, CD> alpha)```
-+ ```Blasw::solve(General<F, D, CF, CD> X, Triangle<F, D, CF, CD> B, <F, D, CF, CD> alpha)```
++ ```Blasw::solve(Triangle<F, D, CF, CD> A, Vector<F, D, CF, CD> B)```
++ ```Blasw::solve(BTriangle<F, D, CF, CD> A, Vector<F, D, CF, CD> B)```
++ ```Blasw::solve(PTriangle<F, D, CF, CD> A, Vector<F, D, CF, CD> B)```
++ ```Blasw::solve(Triangle<F, D, CF, CD> A, General<F, D, CF, CD> B, <F, D, CF, CD> alpha)```
++ ```Blasw::solve(General<F, D, CF, CD> A, Triangle<F, D, CF, CD> B, <F, D, CF, CD> alpha)```
 + ```Blasw::solve(General<F, D, CF, CD> A, General<F, D, CF, CD> B)```
 + ```Blasw::solve(Symmetric<F, D, CF, CD> A, General<F, D, CF, CD> B)```
 + ```Blasw::solve(Hermitian<CF, CD> A, General<CF, CD> B)```
 
 ## Update
-Perform rank 1 or 2 update
+Rank update, A = alpha * X * Y.T + A or A = alpha * X * Y.T + alpha * Y * X.T + A.
 
 + ```Blasw::update(Vector<F, D> X, Vector<F, D> Y, General<F, D> A, <F, D> alpha)```
 + ```Blasw::update(Vector<CF, DF> X, Vector<CF, DF> Y, General<CF, DF> A, <CF, CD> alpha, bool conj = true)```
@@ -265,37 +281,37 @@ Perform rank 1 or 2 update
 + ```Blasw::update(General<CF, CD> A, General<CF, CD> B, Hermitian<T> C, <CF, CD> alpha, <F, D> beta)```
 
 ## Inverse
-Inverse of matrix
+Inverse of matrix, stores the result in A.
 
 + ```Blasw::inverse(General<F, D, CF, CD> A)```
 + ```Blasw::inverse(Symmetric<F, D, CF, CD> A)```
 
 ## Determinant
-Determinant of matrix
+Returns the determinant of A.
 
 + ```Blasw::determinant(General<F, D, CF, CD> A)```
 + ```Blasw::determinant(Symmetric<F, D, CF, CD> A)```
 + ```Blasw::determinant(Hermitian<CF, CD> A)```
 
 ## LUFact
-Lower upper factorization
+Lower upper factorization of A, lower and upper are stored in A and the pivots in P.
 
 + ```Blasw::lufact(General<F, D, CF, CD> A, Vector<int> P)```
 + ```Blasw::lufact(Symmetric<F, D, CF, CD> A, Vector<int> P)```
 + ```Blasw::lufact(Hermitian<CF, CD> A, Vector<int> P)```
 
 ## Cholesky
-cholesky factorization
+Cholesky factorization of A, stored in A.
 
 + ```Blasw::cholesky(Posdef<F, D, CF, CD> A)```
 
 ## QRFact
-QR Factorization
+QR Factorization of A.
 
 + ```Blasw::qrfact(General<F, D, CF, CD> A, Vector<F, D, CF, CD> T)```
 
 ## Eigen
-Eigen decomposition
+Eigen decomposition of A.
 
 + ```Blasw::eigen(General<F, D> A, Vector<CF, CD> E, General<F, D> L, General<F, D> R)```
 + ```Blasw::eigen(General<CF, CD> A, Vector<CF, CD> E, General<CF, CD> L, General<CF, CD> R)```
@@ -303,23 +319,23 @@ Eigen decomposition
 + ```Blasw::eigen(Hermitian<CF, CD> A, Vector<F, D> W, bool vectors)```
 
 ## Schur
-Schur decomposition
+Schur decomposition of A.
 
 + ```Blasw::schur(General<F, D> A, Vector<CF, CD> E, General<F, D> V)```
 + ```Blasw::schur(General<CF, CD> A, Vector<CF, CD> E, General<CF, CD> V)```
 
 ## LSquares
-Least Squares solution
+Least Squares solution of min<X>(||A * X - B||).
 
 + ```Blasw::lsquares(General<F, D, CF, CD> A, General<F, D, CF, CD> B)```
 
 ## SVD
-SVD decomposition
+SVD decomposition of A.
 
 + ```Blasw::svd(General<F, D, CF, CD> A, Vector<F, D> S, General<F, D, CF, CD> U, General<F, D, CF, CD> VT)```
 
 ## Rank
-Matrix rank
+Returns the rank of A, number of singular values above epsilon.
 
 + ```Blasw::rank(General<F, D, CF, CD> A, F, D, CF, CD epsilon)```
 
