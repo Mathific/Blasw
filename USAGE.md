@@ -315,8 +315,8 @@ Eigen decomposition of A.
 
 + ```Blasw::eigen(General<F, D> A, Vector<CF, CD> E, General<F, D> L, General<F, D> R)```
 + ```Blasw::eigen(General<CF, CD> A, Vector<CF, CD> E, General<CF, CD> L, General<CF, CD> R)```
-+ ```Blasw::eigen(Symmetric<F, D> A, Vector<F, D> W, bool vectors)```
-+ ```Blasw::eigen(Hermitian<CF, CD> A, Vector<F, D> W, bool vectors)```
++ ```Blasw::eigen(Symmetric<F, D> A, Vector<F, D> E, bool vectors)```
++ ```Blasw::eigen(Hermitian<CF, CD> A, Vector<F, D> E, bool vectors)```
 
 ## Schur
 Schur decomposition of A.
@@ -337,7 +337,7 @@ SVD decomposition of A.
 ## Rank
 Returns the rank of A, number of singular values above epsilon.
 
-+ ```Blasw::rank(General<F, D, CF, CD> A, F, D, CF, CD epsilon)```
++ ```Blasw::rank(General<F, D, CF, CD> A, <F, D, CF, CD> epsilon)```
 
 # Examples
 Axpy Example:
@@ -352,7 +352,7 @@ for (Blasw::Size i = 0; i < N; ++i) X[i] = 1;
 Blasw::axpy(Blasw::vec(X, N), Blasw::vec(Y, N), alpha);
 ```
 
-General Matrix Multiplication Example:
+Row Major General Matrix Multiplication Example:
 
 ``` c++
 Blasw::Size X = 10, Y = 100, Z = 20;
@@ -364,4 +364,19 @@ float alpha = 1, beta = 0;
 for (Blasw::Size i = 0; i < X * Y; ++i) A[i] = 1;
 for (Blasw::Size i = 0; i < Y * Z; ++i) A[i] = 2;
 Blasw::dot(Blasw::rmat(A, X, Y), Blasw::rmat(B, Y, Z), Blasw::rmat(C, X, Z), alpha, beta);
+```
+
+Row Major Upper Symmetric Matrix Eigen Decomposition:
+
+``` c++
+std::mt19937_64 gen;
+std::uniform_real_distribution<float> dist;
+
+Blasw::Size N = 10;
+auto A = new float[N * N];
+auto E = new float[N];
+
+for (Blasw::Size i = 0; i < N; ++i)
+    for (Blasw::Size j = i; j < N; ++j) A[i * N + j] = dist(gen);
+Blasw::eigen(Blasw::rusym(A, N), Blasw::vec(E, N), true);
 ```
