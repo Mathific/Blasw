@@ -41,7 +41,7 @@ find_library(CBLAS_LIBRARY
 find_package(BLAS REQUIRED)
 set(CBLAS_LINKER_FLAGS "")
 
-if (BLAS_FOUND)
+if(BLAS_FOUND)
     include(CheckFunctionExists)
     set(CMAKE_REQUIRED_LIBRARIES ${BLAS_LIBRARIES})
     check_function_exists(cblas_saxpy TEMP_FOUND)
@@ -61,12 +61,12 @@ find_package_handle_standard_args(
     CBLAS_LIBRARY
     CBLAS_INCLUDE_DIR)
 
-if (CBLAS_FOUND)
+if(CBLAS_FOUND)
     set(CBLAS_LIBRARIES ${CBLAS_LIBRARY})
     set(CBLAS_INCLUDE_DIRS ${CBLAS_INCLUDE_DIR})
 endif()
 
-if (CBLAS_FOUND AND NOT TARGET CBLAS::CBLAS)
+if(CBLAS_FOUND AND NOT TARGET CBLAS::CBLAS)
     add_library(CBLAS::CBLAS INTERFACE IMPORTED)
     set_target_properties(CBLAS::CBLAS PROPERTIES
         INTERFACE_INCLUDE_DIRECTORIES "${CBLAS_INCLUDE_DIRS}"

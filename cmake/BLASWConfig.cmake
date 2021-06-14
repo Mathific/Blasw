@@ -34,7 +34,7 @@ include(CMakeFindDependencyMacro)
 find_dependency(CBLAS REQUIRED)
 
 find_dependency(LAPACKE)
-if (NOT LAPACKE_FOUND)
+if(NOT LAPACKE_FOUND)
     add_library(LAPACKE::LAPACKE INTERFACE IMPORTED)
 endif()
 
