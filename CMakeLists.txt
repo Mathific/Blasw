@@ -36,7 +36,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Variables
 set(BLASW_MASTER OFF CACHE INTERNAL "")
-if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     set(BLASW_MASTER ON CACHE INTERNAL "")
 endif()
 
@@ -69,7 +69,7 @@ target_include_directories(BLASW INTERFACE
 add_library(BLASW::BLASW ALIAS BLASW)
 
 # Installation
-if(BLASW_INSTALL)
+if (BLASW_INSTALL)
     include(CMakePackageConfigHelpers)
     write_basic_package_version_file(
         "BLASWConfigVersion.cmake"
@@ -103,7 +103,7 @@ if(BLASW_INSTALL)
         FILE "${CMAKE_CURRENT_BINARY_DIR}/BLASWTargets.cmake")
 endif()
 
-if(BLASW_TESTS)
+if (BLASW_TESTS)
     add_executable(BlaswTests test/tests.cpp ${HEADERS})
     target_link_libraries(BlaswTests BLASW::BLASW)
 endif()

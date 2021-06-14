@@ -531,7 +531,7 @@ POSDEF(rupod, Row, Upper) POSDEF(cupod, Col, Upper);
 POSDEF(rlpod, Row, Lower) POSDEF(clpod, Col, Lower);
 
 ////////////////////////////////////////////////////////////////////////////////
-// BLAS LEVEL 1
+/// BLAS LEVEL 1 ///////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
 #define REPEAT0(func, name1, name2) \
@@ -660,7 +660,7 @@ REPEAT(ASUM, sasum, dasum, scasum, dzasum)
 REPEAT(IAMAX, isamax, idamax, icamax, izamax)
 
 ////////////////////////////////////////////////////////////////////////////////
-// BLAS LEVEL 2
+/// BLAS LEVEL 2 ///////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
 #define GEMV(F, T, R)                                                                                          \
@@ -892,7 +892,7 @@ REPEAT0(SPR2, sspr2, dspr2)
 REPEAT1(HPR2, chpr2, zhpr2)
 
 ////////////////////////////////////////////////////////////////////////////////
-// BLAS LEVEL 3
+/// BLAS LEVEL 3 ///////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
 #define GEMM(F, T, R)                                                                                           \
@@ -1021,8 +1021,10 @@ REPEAT(SYR2K, ssyr2k, dsyr2k, csyr2k, zsyr2k)
 REPEAT1(HER2K, cher2k, zher2k)
 
 ////////////////////////////////////////////////////////////////////////////////
-// LAPACK
+/// LAPACK /////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+
+#ifdef BLASW_LAPACKE_FOUND
 
 #undef REPEAT0
 #undef REPEAT1
@@ -1343,6 +1345,31 @@ REPEAT(GESVD, sgesvd, dgesvd, cgesvd, zgesvd)
     }
 
 REPEAT(GERK, sgesvd, dgesvd, cgesvd, zgesvd)
+
+#undef GETRI
+#undef SYTRI
+#undef GEDTR
+#undef SYDTR
+#undef HEDTR
+#undef GETRF
+#undef SYTRF
+#undef HETRF
+#undef POTRF
+#undef GEQRF
+#undef GEEV
+#undef GEEVC
+#undef SYEV
+#undef HEEV
+#undef GEES
+#undef GEESC
+#undef GESV
+#undef SYSV
+#undef HESV
+#undef GELS
+#undef GESVD
+#undef GERK
+
+#endif
 }  // namespace Blasw
 
 #undef CHECK
@@ -1409,25 +1436,3 @@ REPEAT(GERK, sgesvd, dgesvd, cgesvd, zgesvd)
 #undef HERK
 #undef SYR2K
 #undef HER2K
-#undef GETRI
-#undef SYTRI
-#undef GEDTR
-#undef SYDTR
-#undef HEDTR
-#undef GETRF
-#undef SYTRF
-#undef HETRF
-#undef POTRF
-#undef GEQRF
-#undef GEEV
-#undef GEEVC
-#undef SYEV
-#undef HEEV
-#undef GEES
-#undef GEESC
-#undef GESV
-#undef SYSV
-#undef HESV
-#undef GELS
-#undef GESVD
-#undef GERK

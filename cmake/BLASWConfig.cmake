@@ -30,6 +30,12 @@
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
 include(CMakeFindDependencyMacro)
+
 find_dependency(CBLAS REQUIRED)
-find_dependency(LAPACKE REQUIRED)
+
+find_dependency(LAPACKE)
+if (NOT LAPACKE_FOUND)
+    add_library(LAPACKE::LAPACKE INTERFACE IMPORTED)
+endif()
+
 include("${CMAKE_CURRENT_LIST_DIR}/BLASWTargets.cmake")
