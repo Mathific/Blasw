@@ -28,18 +28,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-find_path(LAPACKE_INCLUDE_DIR
-    NAMES lapacke.h
-    PATHS
-    PATH_SUFFIXES include)
-
-find_library(LAPACKE_LIBRARY
-    NAMES lapacke
-    PATHS ${LAPACKE_INCLUDE_DIR}/../
-    PATH_SUFFIXES lib lib64)
-
-find_package(LAPACK REQUIRED)
-set(LAPACKE_LINKER_FLAGS "")
+set(LAPACKE_MKL OFF)
+find_package(LAPACK)
+unset(LAPACKE_LINKER_FLAGS CACHE)
 
 if(LAPACK_FOUND)
     include(CheckFunctionExists)
@@ -49,10 +40,39 @@ if(LAPACK_FOUND)
 
     if(TEMP_FOUND)
         set(LAPACKE_LIBRARY ${LAPACK_LIBRARIES})
+        set(LAPACKE_LINKER_FLAGS ${LAPACK_LINKER_FLAGS})
+
+        foreach(TEMP_NAME ${LAPACK_LIBRARIES})
+            get_filename_component(TEMP_NAME "${TEMP_NAME}" NAME)
+            if(TEMP_NAME MATCHES "libmkl.*.so")
+                set(LAPACKE_MKL ON)
+            endif()
+        endforeach()
     endif()
 
-    set(LAPACKE_LINKER_FLAGS ${LAPACK_LINKER_FLAGS})
     unset(TEMP_FOUND CACHE)
+endif()
+
+if(LAPACKE_MKL)
+    find_path(LAPACKE_INCLUDE_DIR
+        NAMES mkl_lapacke.h
+        PATHS /opt/intel/mkl/
+        PATH_SUFFIXES include)
+endif()
+
+if((NOT LAPACKE_INCLUDE_DIR) OR
+        (LAPACKE_INCLUDE_DIR STREQUAL "LAPACKE_INCLUDE_DIR-NOTFOUND"))
+    find_path(LAPACKE_INCLUDE_DIR
+        NAMES lapacke.h
+        PATHS /usr/include/
+        PATH_SUFFIXES)
+endif()
+
+if(NOT LAPACKE_LIBRARY)
+    find_library(LAPACKE_LIBRARY
+        NAMES lapacke
+        PATHS ${LAPACKE_INCLUDE_DIR}/../
+        PATH_SUFFIXES lib lib64)
 endif()
 
 include(FindPackageHandleStandardArgs)
@@ -74,7 +94,11 @@ if(LAPACKE_FOUND AND NOT TARGET LAPACKE::LAPACKE)
         INTERFACE_INCLUDE_DIRECTORIES "${LAPACKE_INCLUDE_DIRS}"
         INTERFACE_LINK_LIBRARIES "${LAPACKE_LIBRARIES}"
         INTERFACE_LINK_OPTIONS "${LAPACKE_LINKER_FLAGS}"
-        INTERFACE_COMPILE_DEFINITIONS "BLASW_LAPACKE_FOUND")
+        INTERFACE_COMPILE_DEFINITIONS BLASW_LAPACKE_FOUND)
+
+    if(LAPACKE_MKL)
+        target_compile_definitions(LAPACKE::LAPACKE INTERFACE BLASW_LAPACKE_MKL)
+    endif()
 endif()
 
 mark_as_advanced(LAPACKE_INCLUDE_DIR LAPACKE_LIBRARY)

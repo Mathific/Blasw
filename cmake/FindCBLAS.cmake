@@ -28,18 +28,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-find_path(CBLAS_INCLUDE_DIR
-    NAMES cblas.h
-    PATHS
-    PATH_SUFFIXES include)
-
-find_library(CBLAS_LIBRARY
-    NAMES cblas
-    PATHS ${CBLAS_INCLUDE_DIR}/../
-    PATH_SUFFIXES lib lib64)
-
-find_package(BLAS REQUIRED)
-set(CBLAS_LINKER_FLAGS "")
+set(CBLAS_MKL OFF)
+find_package(BLAS)
+unset(CBLAS_LINKER_FLAGS CACHE)
 
 if(BLAS_FOUND)
     include(CheckFunctionExists)
@@ -48,9 +39,40 @@ if(BLAS_FOUND)
 
     if(TEMP_FOUND)
         set(CBLAS_LIBRARY ${BLAS_LIBRARIES})
+        set(CBLAS_LINKER_FLAGS "")
+
+        foreach(TEMP_NAME ${BLAS_LIBRARIES})
+            get_filename_component(TEMP_NAME "${TEMP_NAME}" NAME)
+            if(TEMP_NAME MATCHES "libmkl.*.so")
+                set(CBLAS_MKL ON)
+            endif()
+        endforeach()
     endif()
 
     unset(TEMP_FOUND CACHE)
+endif()
+
+if(CBLAS_MKL)
+    find_path(CBLAS_INCLUDE_DIR
+        NAMES mkl_cblas.h
+        PATHS /opt/intel/mkl/
+        PATH_SUFFIXES include)
+    message(${CBLAS_INCLUDE_DIR})
+endif()
+
+if((NOT CBLAS_INCLUDE_DIR) OR
+        (CBLAS_INCLUDE_DIR STREQUAL "CBLAS_INCLUDE_DIR-NOTFOUND"))
+    find_path(CBLAS_INCLUDE_DIR
+        NAMES cblas.h
+        PATHS /usr/include/
+        PATH_SUFFIXES)
+endif()
+
+if(NOT CBLAS_LIBRARY)
+    find_library(CBLAS_LIBRARY
+        NAMES cblas
+        PATHS ${CBLAS_INCLUDE_DIR}/../
+        PATH_SUFFIXES lib lib64)
 endif()
 
 include(FindPackageHandleStandardArgs)
@@ -72,7 +94,11 @@ if(CBLAS_FOUND AND NOT TARGET CBLAS::CBLAS)
         INTERFACE_INCLUDE_DIRECTORIES "${CBLAS_INCLUDE_DIRS}"
         INTERFACE_LINK_LIBRARIES "${CBLAS_LIBRARIES}"
         INTERFACE_LINK_OPTIONS "${CBLAS_LINKER_FLAGS}"
-        INTERFACE_COMPILE_DEFINITIONS "BLASW_CBLAS_FOUND")
+        INTERFACE_COMPILE_DEFINITIONS BLASW_CBLAS_FOUND)
+
+    if(CBLAS_MKL)
+        target_compile_definitions(CBLAS::CBLAS INTERFACE BLASW_CBLAS_MKL)
+    endif()
 endif()
 
 mark_as_advanced(CBLAS_INCLUDE_DIR CBLAS_LIBRARY)

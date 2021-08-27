@@ -56,8 +56,13 @@ list(APPEND CMAKE_MODULE_PATH
 # Library
 list(APPEND CMAKE_MODULE_PATH
     "${CMAKE_CURRENT_LIST_DIR}/cmake")
+set(BLA_VENDOR Generic)
 find_package(CBLAS REQUIRED)
-find_package(LAPACKE REQUIRED)
+find_package(LAPACKE)
+
+if(NOT LAPACKE_FOUND)
+    add_library(LAPACKE::LAPACKE INTERFACE IMPORTED)
+endif()
 
 add_library(BLASW INTERFACE)
 target_link_libraries(BLASW INTERFACE
@@ -67,6 +72,11 @@ target_include_directories(BLASW INTERFACE
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/gen/>"
     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include/>")
 add_library(BLASW::BLASW ALIAS BLASW)
+
+if(BLASW_TESTS)
+    add_executable(BlaswTests test/tests.cpp ${HEADERS})
+    target_link_libraries(BlaswTests BLASW::BLASW)
+endif()
 
 # Installation
 if(BLASW_INSTALL)
@@ -101,9 +111,4 @@ if(BLASW_INSTALL)
     export(TARGETS BLASW
         NAMESPACE BLASW::
         FILE "${CMAKE_CURRENT_BINARY_DIR}/BLASWTargets.cmake")
-endif()
-
-if(BLASW_TESTS)
-    add_executable(BlaswTests test/tests.cpp ${HEADERS})
-    target_link_libraries(BlaswTests BLASW::BLASW)
 endif()

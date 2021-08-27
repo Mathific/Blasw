@@ -38,8 +38,20 @@
 #define lapack_complex_double std::complex<double>
 
 #include <blasw/config.h>
+
+#ifdef BLASW_CBLAS_MKL
+#include <mkl_cblas.h>
+#else
 #include <cblas.h>
+#endif
+
+#ifdef BLASW_LAPACKE_FOUND
+#ifdef BLASW_LAPACKE_MKL
+#include <mkl_lapacke.h>
+#else
 #include <lapacke.h>
+#endif
+#endif
 
 #include <cstdlib>
 #include <iostream>
