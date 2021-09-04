@@ -56,7 +56,6 @@ list(APPEND CMAKE_MODULE_PATH
 # Library
 list(APPEND CMAKE_MODULE_PATH
     "${CMAKE_CURRENT_LIST_DIR}/cmake")
-set(BLA_VENDOR Generic)
 find_package(CBLAS REQUIRED)
 find_package(LAPACKE)
 
