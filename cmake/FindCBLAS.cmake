@@ -57,7 +57,6 @@ if(CBLAS_MKL)
         NAMES mkl_cblas.h
         PATHS /opt/intel/mkl/
         PATH_SUFFIXES include)
-    message(${CBLAS_INCLUDE_DIR})
 endif()
 
 if((NOT CBLAS_INCLUDE_DIR) OR
