@@ -28,7 +28,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(CBLAS_MKL OFF)
+set(CBLAS_MKL OFF CACHE INTERNAL "")
 find_package(BLAS)
 unset(CBLAS_LINKER_FLAGS CACHE)
 
@@ -43,8 +43,8 @@ if(BLAS_FOUND)
 
         foreach(TEMP_NAME ${BLAS_LIBRARIES})
             get_filename_component(TEMP_NAME "${TEMP_NAME}" NAME)
-            if(TEMP_NAME MATCHES "libmkl.*.so")
-                set(CBLAS_MKL ON)
+            if(TEMP_NAME MATCHES "libmkl.*.so|libmkl.*.a")
+                set(CBLAS_MKL ON CACHE INTERNAL "")
             endif()
         endforeach()
     endif()

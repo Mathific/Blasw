@@ -28,7 +28,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(LAPACKE_MKL OFF)
+set(LAPACKE_MKL OFF CACHE INTERNAL "")
 find_package(LAPACK)
 unset(LAPACKE_LINKER_FLAGS CACHE)
 
@@ -44,8 +44,8 @@ if(LAPACK_FOUND)
 
         foreach(TEMP_NAME ${LAPACK_LIBRARIES})
             get_filename_component(TEMP_NAME "${TEMP_NAME}" NAME)
-            if(TEMP_NAME MATCHES "libmkl.*.so")
-                set(LAPACKE_MKL ON)
+            if(TEMP_NAME MATCHES "libmkl.*.so|libmkl.*.a")
+                set(LAPACKE_MKL ON CACHE INTERNAL "")
             endif()
         endforeach()
     endif()
