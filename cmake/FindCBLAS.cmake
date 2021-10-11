@@ -39,7 +39,7 @@ if(BLAS_FOUND)
 
     if(TEMP_FOUND)
         set(CBLAS_LIBRARY ${BLAS_LIBRARIES})
-        set(CBLAS_LINKER_FLAGS "")
+        set(CBLAS_LINKER_FLAGS ${BLAS_LINKER_FLAGS})
 
         foreach(TEMP_NAME ${BLAS_LIBRARIES})
             get_filename_component(TEMP_NAME "${TEMP_NAME}" NAME)
