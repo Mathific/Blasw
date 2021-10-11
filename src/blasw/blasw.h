@@ -675,22 +675,22 @@ REPEAT(IAMAX, isamax, idamax, icamax, izamax)
 /// BLAS LEVEL 2 ///////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-#define GEMV(F, T, R)                                                                                          \
-    inline void dot(General<T> A, Vector<T> X, Vector<T> Y, T alpha, T beta)                                   \
-    {                                                                                                          \
-        CHECK(A._cols() == X.size) CHECK(A._rows() == Y.size);                                                 \
-        F(Impl::blcvt(A.major), Impl::blcvt(A.state), A._rows(), A._cols(), R alpha, A.data, A.stride, X.data, \
-          X.stride, R beta, Y.data, Y.stride);                                                                 \
+#define GEMV(F, T, R)                                                                                              \
+    inline void dot(General<T> A, Vector<T> X, Vector<T> Y, T alpha, T beta)                                       \
+    {                                                                                                              \
+        CHECK(A._cols() == X.size) CHECK(A._rows() == Y.size);                                                     \
+        F(Impl::blcvt(A.major), Impl::blcvt(A.state), A.rows, A.cols, R alpha, A.data, A.stride, X.data, X.stride, \
+          R beta, Y.data, Y.stride);                                                                               \
     }
 
 REPEAT(GEMV, sgemv, dgemv, cgemv, zgemv)
 
-#define GBMV(F, T, R)                                                                                                  \
-    inline void dot(BGeneral<T> A, Vector<T> X, Vector<T> Y, T alpha, T beta)                                          \
-    {                                                                                                                  \
-        CHECK(A._cols() == X.size) CHECK(A._rows() == Y.size);                                                         \
-        F(Impl::blcvt(A.major), Impl::blcvt(A.state), A._rows(), A._cols(), A.sub, A.super, R alpha, A.data, A.stride, \
-          X.data, X.stride, R beta, Y.data, Y.stride);                                                                 \
+#define GBMV(F, T, R)                                                                                            \
+    inline void dot(BGeneral<T> A, Vector<T> X, Vector<T> Y, T alpha, T beta)                                    \
+    {                                                                                                            \
+        CHECK(A._cols() == X.size) CHECK(A._rows() == Y.size);                                                   \
+        F(Impl::blcvt(A.major), Impl::blcvt(A.state), A.rows, A.cols, A.sub, A.super, R alpha, A.data, A.stride, \
+          X.data, X.stride, R beta, Y.data, Y.stride);                                                           \
     }
 
 REPEAT(GBMV, sgbmv, dgbmv, cgbmv, zgbmv)
