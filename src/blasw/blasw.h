@@ -162,9 +162,9 @@ struct General
     State state;
     STATE(General);
 
-    General() : data(nullptr), rows(0), cols(0), stride(0), major(Major::Row), state(State::None) {}
+    General() : data(nullptr), rows(0), cols(0), stride(0), major{Major::Row}, state(State::None) {}
     General(T *data, Size rows, Size cols, Size stride, Major major, State state)
-        : data(data), rows(rows), cols(cols), major(major), state(state)
+        : data(data), rows(rows), cols(cols), major{major}, state(state)
     {
         this->stride = (stride == 0 ? (major == Major::Row ? cols : rows) : stride);
     }
@@ -194,9 +194,9 @@ struct BGeneral
     Size sub, super;
     STATE(BGeneral);
 
-    BGeneral() : data(nullptr), rows(0), cols(0), stride(0), major(Major::Row), state(State::None), sub(0), super(0) {}
+    BGeneral() : data(nullptr), rows(0), cols(0), stride(0), major{Major::Row}, state(State::None), sub(0), super(0) {}
     BGeneral(T *data, Size rows, Size cols, Size stride, Major major, State state, Size sub, Size super)
-        : data(data), rows(rows), cols(cols), major(major), state(state), sub(sub), super(super)
+        : data(data), rows(rows), cols(cols), major{major}, state(state), sub(sub), super(super)
     {
         this->stride = (stride == 0 ? (major == Major::Row ? cols : rows) : stride);
     }
@@ -235,14 +235,14 @@ struct Triangle
         : data(nullptr),
           size(0),
           stride(0),
-          major(Major::Row),
+          major{Major::Row},
           state(State::None),
           tri(Triangular::Upper),
           diag(Diagonal::NonUnit)
     {
     }
     Triangle(T *data, Size size, Size stride, Major major, State state, Triangular tri, Diagonal diag)
-        : data(data), size(size), major(major), state(state), tri(tri), diag(diag)
+        : data(data), size(size), major{major}, state(state), tri(tri), diag(diag)
     {
         this->stride = (stride == 0 ? size : stride);
     }
@@ -280,7 +280,7 @@ struct BTriangle
         : data(nullptr),
           size(0),
           stride(0),
-          major(Major::Row),
+          major{Major::Row},
           state(State::None),
           tri(Triangular::Upper),
           diag(Diagonal::NonUnit),
@@ -288,7 +288,7 @@ struct BTriangle
     {
     }
     BTriangle(T *data, Size size, Size stride, Major major, State state, Triangular tri, Diagonal diag, Size super)
-        : data(data), size(size), major(major), state(state), tri(tri), diag(diag), super(super)
+        : data(data), size(size), major{major}, state(state), tri(tri), diag(diag), super(super)
     {
         this->stride = (stride == 0 ? size : stride);
     }
@@ -323,11 +323,11 @@ struct PTriangle
     STATE(PTriangle);
 
     PTriangle()
-        : data(nullptr), size(0), major(Major::Row), state(State::None), tri(Triangular::Upper), diag(Diagonal::NonUnit)
+        : data(nullptr), size(0), major{Major::Row}, state(State::None), tri(Triangular::Upper), diag(Diagonal::NonUnit)
     {
     }
     PTriangle(T *data, Size size, Major major, State state, Triangular tri, Diagonal diag)
-        : data(data), size(size), major(major), state(state), tri(tri), diag(diag)
+        : data(data), size(size), major{major}, state(state), tri(tri), diag(diag)
     {
     }
 
@@ -361,9 +361,9 @@ struct Symmetric
     Major major;
     Triangular tri;
 
-    Symmetric() : data(nullptr), size(0), stride(0), major(Major::Row), tri(Triangular::Upper) {}
+    Symmetric() : data(nullptr), size(0), stride(0), major{Major::Row}, tri(Triangular::Upper) {}
     Symmetric(T *data, Size size, Size stride, Major major, Triangular tri)
-        : data(data), size(size), major(major), tri(tri)
+        : data(data), size(size), major{major}, tri(tri)
     {
         this->stride = (stride == 0 ? size : stride);
     }
@@ -389,9 +389,9 @@ struct BSymmetric
     Triangular tri;
     Size super;
 
-    BSymmetric() : data(nullptr), size(0), stride(0), major(Major::Row), tri(Triangular::Upper), super(0) {}
+    BSymmetric() : data(nullptr), size(0), stride(0), major{Major::Row}, tri(Triangular::Upper), super(0) {}
     BSymmetric(T *data, Size size, Size stride, Major major, Triangular tri, Size super)
-        : data(data), size(size), major(major), tri(tri), super(super)
+        : data(data), size(size), major{major}, tri(tri), super(super)
     {
         this->stride = (stride == 0 ? size : stride);
     }
@@ -416,8 +416,8 @@ struct PSymmetric
     Major major;
     Triangular tri;
 
-    PSymmetric() : data(nullptr), size(0), major(Major::Row), tri(Triangular::Upper) {}
-    PSymmetric(T *data, Size size, Major major, Triangular tri) : data(data), size(size), major(major), tri(tri) {}
+    PSymmetric() : data(nullptr), size(0), major{Major::Row}, tri(Triangular::Upper) {}
+    PSymmetric(T *data, Size size, Major major, Triangular tri) : data(data), size(size), major{major}, tri(tri) {}
 };
 
 #define PSYMMETRIC(name, major, tri)                                     \
@@ -443,9 +443,9 @@ struct Hermitian
     Major major;
     Triangular tri;
 
-    Hermitian() : data(nullptr), size(0), stride(0), major(Major::Row), tri(Triangular::Upper) {}
+    Hermitian() : data(nullptr), size(0), stride(0), major{Major::Row}, tri(Triangular::Upper) {}
     Hermitian(T *data, Size size, Size stride, Major major, Triangular tri)
-        : data(data), major(major), size(size), tri(tri)
+        : data(data), major{major}, size(size), tri(tri)
     {
         this->stride = (stride == 0 ? size : stride);
     }
@@ -471,9 +471,9 @@ struct BHermitian
     Triangular tri;
     Size super;
 
-    BHermitian() : data(nullptr), size(0), stride(0), major(Major::Row), tri(Triangular::Upper), super(0) {}
+    BHermitian() : data(nullptr), size(0), stride(0), major{Major::Row}, tri(Triangular::Upper), super(0) {}
     BHermitian(T *data, Size size, Size stride, Major major, Triangular tri, Size super)
-        : data(data), size(size), major(major), tri(tri), super(super)
+        : data(data), size(size), major{major}, tri(tri), super(super)
     {
         this->stride = (stride == 0 ? size : stride);
     }
@@ -498,8 +498,8 @@ struct PHermitian
     Major major;
     Triangular tri;
 
-    PHermitian() : data(nullptr), size(0), major(Major::Row), tri(Triangular::Upper) {}
-    PHermitian(T *data, Size size, Major major, Triangular tri) : data(data), size(size), major(major), tri(tri) {}
+    PHermitian() : data(nullptr), size(0), major{Major::Row}, tri(Triangular::Upper) {}
+    PHermitian(T *data, Size size, Major major, Triangular tri) : data(data), size(size), major{major}, tri(tri) {}
 };
 
 #define PHERMITIAN(name, major, tri)                                     \
@@ -525,9 +525,9 @@ struct Posdef
     Major major;
     Triangular tri;
 
-    Posdef() : data(nullptr), size(0), stride(0), major(Major::Row), tri(Triangular::Upper) {}
+    Posdef() : data(nullptr), size(0), stride(0), major{Major::Row}, tri(Triangular::Upper) {}
     Posdef(T *data, Size size, Size stride, Major major, Triangular tri)
-        : data(data), size(size), major(major), tri(tri)
+        : data(data), size(size), major{major}, tri(tri)
     {
         this->stride = (stride == 0 ? size : stride);
     }
