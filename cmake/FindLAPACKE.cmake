@@ -56,7 +56,7 @@ endif()
 if(LAPACKE_MKL)
     find_path(LAPACKE_INCLUDE_DIR
         NAMES mkl_lapacke.h
-        PATHS /opt/intel/mkl/
+        PATHS "$ENV{MKLROOT}"
         PATH_SUFFIXES include)
 endif()
 
@@ -64,7 +64,6 @@ if((NOT LAPACKE_INCLUDE_DIR) OR
         (LAPACKE_INCLUDE_DIR STREQUAL "LAPACKE_INCLUDE_DIR-NOTFOUND"))
     find_path(LAPACKE_INCLUDE_DIR
         NAMES lapacke.h
-        PATHS /usr/include/
         PATH_SUFFIXES)
 endif()
 

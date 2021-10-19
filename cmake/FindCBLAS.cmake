@@ -55,7 +55,7 @@ endif()
 if(CBLAS_MKL)
     find_path(CBLAS_INCLUDE_DIR
         NAMES mkl_cblas.h
-        PATHS /opt/intel/mkl/
+        PATHS "$ENV{MKLROOT}"
         PATH_SUFFIXES include)
 endif()
 
@@ -63,7 +63,6 @@ if((NOT CBLAS_INCLUDE_DIR) OR
         (CBLAS_INCLUDE_DIR STREQUAL "CBLAS_INCLUDE_DIR-NOTFOUND"))
     find_path(CBLAS_INCLUDE_DIR
         NAMES cblas.h
-        PATHS /usr/include/
         PATH_SUFFIXES)
 endif()
 
