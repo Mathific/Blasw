@@ -44,7 +44,7 @@ if(LAPACK_FOUND)
 
         foreach(TEMP_NAME ${LAPACK_LIBRARIES})
             get_filename_component(TEMP_NAME "${TEMP_NAME}" NAME)
-            if(TEMP_NAME MATCHES "libmkl.*.so|libmkl.*.a")
+            if(TEMP_NAME MATCHES "libmkl.*.so|libmkl.*.a|mkl.*.lib|mkl.*.dll")
                 set(LAPACKE_MKL ON CACHE INTERNAL "")
             endif()
         endforeach()
@@ -57,7 +57,7 @@ if(LAPACKE_MKL)
     find_path(LAPACKE_INCLUDE_DIR
         NAMES mkl_lapacke.h
         PATHS "$ENV{MKLROOT}"
-        PATH_SUFFIXES include)
+        PATH_SUFFIXES include mkl/include)
 endif()
 
 if((NOT LAPACKE_INCLUDE_DIR) OR

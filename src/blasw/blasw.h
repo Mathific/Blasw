@@ -1075,7 +1075,11 @@ inline char lpcvt(Triangular tri) { return tri == Triangular::Upper ? 'U' : 'L';
 template <typename T>
 std::unique_ptr<T> alloc(Size size)
 {
+#ifdef _WIN32
+    auto P = malloc(size * sizeof(T));
+#else
     auto P = aligned_alloc(64, size * sizeof(T));
+#endif
     return std::unique_ptr<T>((T *)P);
 }
 }  // namespace Impl

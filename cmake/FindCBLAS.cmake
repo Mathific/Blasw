@@ -43,7 +43,7 @@ if(BLAS_FOUND)
 
         foreach(TEMP_NAME ${BLAS_LIBRARIES})
             get_filename_component(TEMP_NAME "${TEMP_NAME}" NAME)
-            if(TEMP_NAME MATCHES "libmkl.*.so|libmkl.*.a")
+            if(TEMP_NAME MATCHES "libmkl.*.so|libmkl.*.a|mkl.*.lib|mkl.*.dll")
                 set(CBLAS_MKL ON CACHE INTERNAL "")
             endif()
         endforeach()
@@ -56,7 +56,7 @@ if(CBLAS_MKL)
     find_path(CBLAS_INCLUDE_DIR
         NAMES mkl_cblas.h
         PATHS "$ENV{MKLROOT}"
-        PATH_SUFFIXES include)
+        PATH_SUFFIXES include mkl/include)
 endif()
 
 if((NOT CBLAS_INCLUDE_DIR) OR
