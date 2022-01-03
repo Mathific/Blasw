@@ -30,7 +30,6 @@
 
 set(LAPACKE_MKL OFF CACHE INTERNAL "")
 find_package(LAPACK)
-unset(LAPACKE_LINKER_FLAGS CACHE)
 
 if(LAPACK_FOUND)
     include(CheckFunctionExists)
@@ -53,26 +52,36 @@ if(LAPACK_FOUND)
     unset(TEMP_FOUND CACHE)
 endif()
 
+if(NOT LAPACKE_LIBRARY)
+    find_library(LAPACKE_LIBRARY
+        NAMES lapacke
+        PATHS ${BLASW_PATH} $ENV{BLASW_PATH}
+        PATH_SUFFIXES lib lib64)
+endif()
+
+if(LAPACKE_LIBRARY)
+    foreach(TEMP_DIR ${LAPACKE_LIBRARY})
+        get_filename_component(TEMP_DIR "${TEMP_DIR}" DIRECTORY)
+        list(APPEND HINT_PATH "${TEMP_DIR}/../")
+    endforeach()
+endif()
+
 if(LAPACKE_MKL)
     find_path(LAPACKE_INCLUDE_DIR
         NAMES mkl_lapacke.h
-        PATHS "$ENV{MKLROOT}"
-        PATH_SUFFIXES include mkl/include)
+        PATHS ${HINT_PATH} "$ENV{MKLROOT}"
+        PATH_SUFFIXES include)
 endif()
 
 if((NOT LAPACKE_INCLUDE_DIR) OR
         (LAPACKE_INCLUDE_DIR STREQUAL "LAPACKE_INCLUDE_DIR-NOTFOUND"))
     find_path(LAPACKE_INCLUDE_DIR
         NAMES lapacke.h
-        PATH_SUFFIXES)
+        PATHS ${HINT_PATH}
+        PATH_SUFFIXES include)
 endif()
 
-if(NOT LAPACKE_LIBRARY)
-    find_library(LAPACKE_LIBRARY
-        NAMES lapacke
-        PATHS ${LAPACKE_INCLUDE_DIR}/../
-        PATH_SUFFIXES lib lib64)
-endif()
+unset(HINT_PATH)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(

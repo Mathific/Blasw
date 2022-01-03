@@ -30,11 +30,11 @@
 
 set(CBLAS_MKL OFF CACHE INTERNAL "")
 find_package(BLAS)
-unset(CBLAS_LINKER_FLAGS CACHE)
 
 if(BLAS_FOUND)
     include(CheckFunctionExists)
     set(CMAKE_REQUIRED_LIBRARIES ${BLAS_LIBRARIES})
+    set(CMAKE_REQUIRED_FLAGS ${BLAS_LINKER_FLAGS})
     check_function_exists(cblas_saxpy TEMP_FOUND)
 
     if(TEMP_FOUND)
@@ -52,26 +52,36 @@ if(BLAS_FOUND)
     unset(TEMP_FOUND CACHE)
 endif()
 
+if(NOT CBLAS_LIBRARY)
+    find_library(CBLAS_LIBRARY
+        NAMES cblas
+        PATHS ${BLASW_PATH} $ENV{BLASW_PATH}
+        PATH_SUFFIXES lib lib64)
+endif()
+
+if(CBLAS_LIBRARY)
+    foreach(TEMP_DIR ${CBLAS_LIBRARY})
+        get_filename_component(TEMP_DIR "${TEMP_DIR}" DIRECTORY)
+        list(APPEND HINT_PATH "${TEMP_DIR}/../")
+    endforeach()
+endif()
+
 if(CBLAS_MKL)
     find_path(CBLAS_INCLUDE_DIR
         NAMES mkl_cblas.h
-        PATHS "$ENV{MKLROOT}"
-        PATH_SUFFIXES include mkl/include)
+        PATHS ${HINT_PATH} "$ENV{MKLROOT}"
+        PATH_SUFFIXES include)
 endif()
 
 if((NOT CBLAS_INCLUDE_DIR) OR
         (CBLAS_INCLUDE_DIR STREQUAL "CBLAS_INCLUDE_DIR-NOTFOUND"))
     find_path(CBLAS_INCLUDE_DIR
         NAMES cblas.h
-        PATH_SUFFIXES)
+        PATHS ${HINT_PATH}
+        PATH_SUFFIXES include)
 endif()
 
-if(NOT CBLAS_LIBRARY)
-    find_library(CBLAS_LIBRARY
-        NAMES cblas
-        PATHS ${CBLAS_INCLUDE_DIR}/../
-        PATH_SUFFIXES lib lib64)
-endif()
+unset(HINT_PATH)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
