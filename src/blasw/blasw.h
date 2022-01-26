@@ -40,6 +40,7 @@
 #include <blasw/config.h>
 
 #ifdef BLASW_CBLAS_MKL
+#include <mkl.h>
 #include <mkl_cblas.h>
 #else
 #include <cblas.h>
@@ -47,6 +48,7 @@
 
 #ifdef BLASW_LAPACKE_FOUND
 #ifdef BLASW_LAPACKE_MKL
+#include <mkl.h>
 #include <mkl_lapacke.h>
 #else
 #include <lapacke.h>
@@ -1056,7 +1058,7 @@ REPEAT1(HER2K, cher2k, zher2k)
 
 namespace Impl
 {
-inline int lpcvt(Major major) { return major == Major::Row ? LAPACK_ROW_MAJOR : LAPACK_ROW_MAJOR; }
+inline int lpcvt(Major major) { return major == Major::Row ? LAPACK_ROW_MAJOR : LAPACK_COL_MAJOR; }
 
 inline char lpcvt(State state)
 {
