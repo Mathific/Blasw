@@ -68,7 +68,6 @@
 namespace Blasw
 {
 using Size = int;
-using Index = CBLAS_INDEX;
 
 enum class Major
 {
@@ -669,7 +668,7 @@ REPEAT(NRM2, snrm2, dnrm2, scnrm2, dznrm2)
 REPEAT(ASUM, sasum, dasum, scasum, dzasum)
 
 #define IAMAX(F, T, R) \
-    inline Index iamax(Vector<T> X) { return F(X.size, X.data, X.stride); }
+    inline int64_t iamax(Vector<T> X) { return F(X.size, X.data, X.stride); }
 
 REPEAT(IAMAX, isamax, idamax, icamax, izamax)
 
