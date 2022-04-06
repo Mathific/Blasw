@@ -67,7 +67,11 @@
 
 namespace Blasw
 {
+#ifdef BLASW_CBLAS_MKL
+using Size = MKL_INT;
+#else
 using Size = int;
+#endif
 
 enum class Major
 {
@@ -1057,7 +1061,7 @@ REPEAT1(HER2K, cher2k, zher2k)
 
 namespace Impl
 {
-inline int lpcvt(Major major) { return major == Major::Row ? LAPACK_ROW_MAJOR : LAPACK_COL_MAJOR; }
+inline Size lpcvt(Major major) { return major == Major::Row ? LAPACK_ROW_MAJOR : LAPACK_COL_MAJOR; }
 
 inline char lpcvt(State state)
 {
@@ -1089,7 +1093,7 @@ std::unique_ptr<T> alloc(Size size)
     inline bool inverse(General<T> A)                                                                     \
     {                                                                                                     \
         CHECK(A.rows == A.cols) CHECK(A.state == State::None);                                            \
-        auto P = Impl::alloc<int>(A.rows);                                                                \
+        auto P = Impl::alloc<Size>(A.rows);                                                                \
         if (F##getrf(Impl::lpcvt(A.major), A.rows, A.cols, A.data, A.stride, P.get()) != 0) return false; \
         return F##getri(Impl::lpcvt(A.major), A.rows, A.data, A.stride, P.get()) == 0;                    \
     }
@@ -1099,7 +1103,7 @@ REPEAT(GETRI, s, d, c, z)
 #define SYTRI(F, T, R)                                                                                                \
     inline bool inverse(Symmetric<T> A)                                                                               \
     {                                                                                                                 \
-        auto P = Impl::alloc<int>(A.size);                                                                            \
+        auto P = Impl::alloc<Size>(A.size);                                                                            \
         if (F##sytrf(Impl::lpcvt(A.major), Impl::lpcvt(A.tri), A.size, A.data, A.stride, P.get()) != 0) return false; \
         return F##sytri(Impl::lpcvt(A.major), Impl::lpcvt(A.tri), A.size, A.data, A.stride, P.get()) == 0;            \
     }
@@ -1110,7 +1114,7 @@ REPEAT(SYTRI, s, d, c, z)
     inline T determinant(General<T> A)                                                                 \
     {                                                                                                  \
         CHECK(A.rows == A.cols) CHECK(A.state == State::None);                                         \
-        auto _P = Impl::alloc<int>(A.rows);                                                            \
+        auto _P = Impl::alloc<Size>(A.rows);                                                            \
         if (F##getrf(Impl::lpcvt(A.major), A.rows, A.cols, A.data, A.stride, _P.get()) != 0) return 0; \
                                                                                                        \
         T det = 1;                                                                                     \
@@ -1124,7 +1128,7 @@ REPEAT(GEDTR, s, d, c, z)
 #define SYDTR(F, T, R)                                                                                             \
     inline T determinant(Symmetric<T> A)                                                                           \
     {                                                                                                              \
-        auto _P = Impl::alloc<int>(A.size);                                                                        \
+        auto _P = Impl::alloc<Size>(A.size);                                                                        \
         if (F##sytrf(Impl::lpcvt(A.major), Impl::lpcvt(A.tri), A.size, A.data, A.stride, _P.get()) != 0) return 0; \
                                                                                                                    \
         T det = 1;                                                                                                 \
@@ -1138,7 +1142,7 @@ REPEAT(SYDTR, s, d, c, z)
 #define HEDTR(F, T, R)                                                                                             \
     inline T determinant(Hermitian<T> A)                                                                           \
     {                                                                                                              \
-        auto _P = Impl::alloc<int>(A.size);                                                                        \
+        auto _P = Impl::alloc<Size>(A.size);                                                                        \
         if (F##hetrf(Impl::lpcvt(A.major), Impl::lpcvt(A.tri), A.size, A.data, A.stride, _P.get()) != 0) return 0; \
                                                                                                                    \
         T det = 1;                                                                                                 \
@@ -1150,7 +1154,7 @@ REPEAT(SYDTR, s, d, c, z)
 REPEAT1(HEDTR, c, z)
 
 #define GETRF(F, T, R)                                                                                \
-    inline bool lufact(General<T> A, Vector<int> P)                                                   \
+    inline bool lufact(General<T> A, Vector<Size> P)                                                   \
     {                                                                                                 \
         CHECK(A.state == State::None) CHECK(std::min(A.rows, A.cols) == P.size) CHECK(P.stride == 1); \
         return F(Impl::lpcvt(A.major), A.rows, A.cols, A.data, A.stride, P.data) == 0;                \
@@ -1159,7 +1163,7 @@ REPEAT1(HEDTR, c, z)
 REPEAT(GETRF, sgetrf, dgetrf, cgetrf, zgetrf)
 
 #define SYTRF(F, T, R)                                                                             \
-    inline bool lufact(Symmetric<T> A, Vector<int> P)                                              \
+    inline bool lufact(Symmetric<T> A, Vector<Size> P)                                              \
     {                                                                                              \
         CHECK(A.size == P.size) CHECK(P.stride == 1);                                              \
         return F(Impl::lpcvt(A.major), Impl::lpcvt(A.tri), A.size, A.data, A.stride, P.data) == 0; \
@@ -1168,7 +1172,7 @@ REPEAT(GETRF, sgetrf, dgetrf, cgetrf, zgetrf)
 REPEAT(SYTRF, ssytrf, dsytrf, csytrf, zsytrf)
 
 #define HETRF(F, T, R)                                                                             \
-    inline bool lufact(Hermitian<T> A, Vector<int> P)                                              \
+    inline bool lufact(Hermitian<T> A, Vector<Size> P)                                              \
     {                                                                                              \
         CHECK(A.size == P.size) CHECK(P.stride == 1);                                              \
         return F(Impl::lpcvt(A.major), Impl::lpcvt(A.tri), A.size, A.data, A.stride, P.data) == 0; \
@@ -1263,7 +1267,7 @@ REPEAT1(HEEV, cheev, zheev)
         CHECK(A.major == V.major) CHECK(A.state == State::None) CHECK(V.state == State::None);                    \
         CHECK(A.rows == A.cols) CHECK(A.rows == E.size) CHECK(E.stride == 1) CHECK(V.rows == V.cols);             \
                                                                                                                   \
-        int sdim = 0;                                                                                             \
+        Size sdim = 0;                                                                                             \
         if (V.data == nullptr) V.stride = A.rows;                                                                 \
         auto _WR = Impl::alloc<T>(A.rows), _WI = Impl::alloc<T>(A.rows);                                          \
         if (F(Impl::lpcvt(A.major), V.data == nullptr ? 'N' : 'V', 'N', nullptr, A.rows, A.data, A.stride, &sdim, \
@@ -1281,7 +1285,7 @@ REPEAT1(HEEV, cheev, zheev)
         CHECK(A.major == V.major) CHECK(A.state == State::None) CHECK(V.state == State::None);                       \
         CHECK(A.rows == A.cols) CHECK(A.rows == E.size) CHECK(E.stride == 1) CHECK(V.rows == V.cols);                \
                                                                                                                      \
-        int sdim = 0;                                                                                                \
+        Size sdim = 0;                                                                                                \
         if (V.data == nullptr) V.stride = A.rows;                                                                    \
         return F(Impl::lpcvt(A.major), V.data == nullptr ? 'N' : 'V', 'N', nullptr, A.rows, A.data, A.stride, &sdim, \
                  E.data, V.data, V.stride) == 0;                                                                     \
@@ -1295,7 +1299,7 @@ REPEAT1(GEESC, cgees, zgees)
     {                                                                                                     \
         CHECK(A.major == B.major) CHECK(A.state == State::None) CHECK(B.state == State::None);            \
         CHECK(A.rows == A.cols) CHECK(A.rows == B.rows);                                                  \
-        auto P = Impl::alloc<int>(A.rows);                                                                \
+        auto P = Impl::alloc<Size>(A.rows);                                                                \
         return F(Impl::lpcvt(A.major), A.rows, B.cols, A.data, A.stride, P.get(), B.data, B.stride) == 0; \
     }
 
@@ -1305,7 +1309,7 @@ REPEAT(GESV, sgesv, dgesv, cgesv, zgesv)
     inline bool solve(Symmetric<T> A, General<T> B)                                                           \
     {                                                                                                         \
         CHECK(A.major == B.major) CHECK(B.state == State::None) CHECK(A.size == B.rows);                      \
-        auto P = Impl::alloc<int>(A.size);                                                                    \
+        auto P = Impl::alloc<Size>(A.size);                                                                    \
         return F(Impl::lpcvt(A.major), Impl::lpcvt(A.tri), A.size, B.cols, A.data, A.stride, P.get(), B.data, \
                  B.stride) == 0;                                                                              \
     }
@@ -1316,7 +1320,7 @@ REPEAT(SYSV, ssysv, dsysv, csysv, zsysv)
     inline bool solve(Hermitian<T> A, General<T> B)                                                           \
     {                                                                                                         \
         CHECK(A.major == B.major) CHECK(B.state == State::None) CHECK(A.size == B.rows);                      \
-        auto P = Impl::alloc<int>(A.size);                                                                    \
+        auto P = Impl::alloc<Size>(A.size);                                                                    \
         return F(Impl::lpcvt(A.major), Impl::lpcvt(A.tri), A.size, B.cols, A.data, A.stride, P.get(), B.data, \
                  B.stride) == 0;                                                                              \
     }
